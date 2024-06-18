@@ -4,7 +4,7 @@ from langchain_groq import ChatGroq
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.messages import HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import gradio as gr 
 
 # Load api key to environment
@@ -23,11 +23,27 @@ def get_session_history(session_id:str) -> BaseChatMessageHistory:
     return store[session_id]
 
 def get_model_response(message:str, history:str)->str:
-    with_message_history = RunnableWithMessageHistory(model, get_session_history)
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "You are a very helpful assistant"
+            ),
+            MessagesPlaceholder(variable_name='history'),
+            ("human", "{input}"),
+        ]
+    )
+    runnable = prompt | model
+    with_message_history = RunnableWithMessageHistory(
+        runnable,
+        get_session_history,
+        input_messages_key = "input",
+        history_messages_key = "history",
+    )
     config = {'configurable':{'session_id':'abc1'}}
     response = with_message_history.invoke(
-        [HumanMessage(content=message)],
-        config = config
+        {'input':message},
+        config = config,
     )
     return response.content
 
