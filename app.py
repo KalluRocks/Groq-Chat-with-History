@@ -9,7 +9,7 @@ import gradio as gr
 
 # Load api key to environment
 load_dotenv()
-os.environ['GROQ_API_KEY'] = os.getenv("GROQ_API_KEY")
+os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
 
 # Load groq model llama3
 model = ChatGroq(model_name='llama3-8b-8192')
