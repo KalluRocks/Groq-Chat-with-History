@@ -50,4 +50,4 @@ def get_model_response(message:str, history:str)->str:
 demo = gr.ChatInterface(fn=get_model_response, title='Groq Llama3 Chatbot')
 
 if __name__ == "__main__":
-    demo.queue().launch()
+    demo.launch()
